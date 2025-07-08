@@ -9,12 +9,18 @@ const path = require("path");
 const User = require("./Models/userSchema");
 const Group= require('./Models/groupSchema');
 const routes=require('./Routes/route')
+const cookieParser=require('cookie-parser')
 
 dotenv.config();
 const port=process.env.PORT||4000;
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
+
 app.use(express.json());
+app.use(cookieParser());
 app.use('/v1',routes);
 
 

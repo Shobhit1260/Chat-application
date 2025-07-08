@@ -9,13 +9,15 @@ const Profile = () => {
   useEffect(()=>{
      const sendtokentoBackend=async()=>{
      const token= await getAccessTokenSilently();
+     console.log("frontent token:",token);
      const res=await fetch('http://localhost:8000/v1/storeuser',{
       method:"POST",
       headers:{
        'content-type':'application/json',
-       'Authorization':`Bearer ${token}`
+       'authorization':`Bearer ${token}`
       },
-      body:JSON.stringify(user)
+      body:JSON.stringify(user),
+      credentials: "include"
      })
      const data= await res.json();
      console.log("data:",data);

@@ -4,6 +4,7 @@ const groupSchema = require('../Models/groupSchema');
 
 exports.createGroup=async(req,res)=>{
    try{
+      
       const {name,membersId}=req.body;
       if(!name){
         return res.status(400).json({
@@ -17,6 +18,7 @@ exports.createGroup=async(req,res)=>{
            message:"plz add at least two members to the group." 
         })
       }
+      
       const group= await Group.create({
         name,
         members:[...membersId,req.user.Id]
@@ -25,7 +27,9 @@ exports.createGroup=async(req,res)=>{
       await User.updateMany(
         {_id:{$in:[...membersId,req.user.Id]}},
         {$push:{groups:group._id}}
-    )
+      )
+     
+     console.log("hello in create group")
       res.status(201).json({
         success:true,
         group
@@ -76,15 +80,29 @@ exports.addMember=async(req,res)=>{
 
 exports.storeUser=async(req,res)=>{
   try{
+    if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
+       const token =req.headers.authorization.split(" ")[1];
+        console.log("Hello from this side:",token)
+        res.cookie("auth0_token", token, {
+        httpOnly: true,
+        secure: false,         
+        sameSite: "none",     
+        maxAge: 24 * 60 * 60 * 1000 
+    });
+  }
+
     const {nickname,email,picture,sub}=req.body;
-    let user=await User.findOne({nickname});
-    if(!user){
-     user =await User.create({
+      let user = await User.findOne({ oauthId: sub });
+
+  if (!user) {
+    user = await User.create({
       email,
-      nickname,
+      username: nickname,
       picture,
-      auth0Id: sub,
-    })}
+      oauthId: sub,
+      oauthProvider: "auth0",
+    });
+  }
     res.status(201).json({
       success:true,
       user

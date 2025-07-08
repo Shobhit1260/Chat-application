@@ -13,9 +13,13 @@ const userSchema=new mongoose.Schema({
     picture:{
         type:String
     },
-    sub:{
-        type:String,
-    }
+    oauthProvider: {
+      type: String, // e.g., "auth0"
+    },
+    oauthId: {
+      type: String, // e.g., "auth0|123456..."
+      unique: true,
+    },
 
 })
 
