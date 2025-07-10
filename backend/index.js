@@ -35,14 +35,14 @@ const io = new Server(server,{
 
 
 io.on('connection',(socket)=>{
-  console.log("user connected",socket.id);
-  socket.on('setup',async(userId)=>{
-     socket.userId=userId;
+  console.log("socket connected",socket.id);
+  socket.on('setup', async (userId) => {
+     socket.userId = userId;
     //  for 1-1 chat
-     socket.join(userId.toString());
+     socket.join(userId);
     // for group-chat 
-    const user=await User.findById({userId}).populate('groups');
-    user?.groups.forEach(group=>{
+    const user = await User.findById(userId).populate('groups');
+    user?.groups.forEach(group => {
         socket.join(group._id.toString())
         console.log(group._id);
     })
@@ -61,7 +61,7 @@ io.on('connection',(socket)=>{
     socket.on("sendGroupMessage",({groupId,message})=>{
       io.to(groupId).emit("receiveGroupMessage",{
         sender: socket.userId,
-        groupId,
+        receiver:groupId,
         message,
         type: 'group',
         timestamp: Date.now(),

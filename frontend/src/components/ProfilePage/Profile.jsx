@@ -5,12 +5,11 @@ import { Link } from "react-router-dom";
 const Profile = () => {
   const { user, isAuthenticated, isLoading, logout ,getAccessTokenSilently} = useAuth0();
   const [users,setUsers]=useState([]);
+  const [me,setMe]=useState({})
   const text="Loading your Profile ...";
-   console.log("user:", user);
   useEffect(()=>{
      const sendtokentoBackend=async()=>{
      const token= await getAccessTokenSilently();
-     console.log("frontent token:",token);
      const res=await fetch('http://localhost:8000/v1/storeuser',{
       method:"POST",
       headers:{
@@ -21,14 +20,14 @@ const Profile = () => {
       credentials: "include"
      })
      const data= await res.json();
-     
+     setMe(data.user);
      }
       if(isAuthenticated){
        sendtokentoBackend();
      }
   },[isAuthenticated,getAccessTokenSilently])
 
-
+  console.log("me:",me);
   if (isLoading) {
     return (
       <div className="text-white text-2xl animate-pulse text-center mt-20">

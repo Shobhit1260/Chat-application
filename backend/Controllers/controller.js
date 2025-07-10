@@ -4,7 +4,7 @@ const groupSchema = require('../Models/groupSchema');
 
 exports.fetchUser=async(req,res)=>{
    try{
-      console.log("req.user:",req.user);  
+       
       const users= await User.find({});
       return res.status(200).json({
         success:true,
@@ -100,7 +100,7 @@ exports.addMember=async(req,res)=>{
         { _id: memberId },
         { $push: { groups: groupId } }
     )
-
+    
     res.status(200).json({ message: 'User added to group' });
   }
   catch(error){

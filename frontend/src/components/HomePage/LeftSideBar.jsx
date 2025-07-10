@@ -21,8 +21,7 @@ function LeftSideBar({users}) {
          <div className="w-5 aspect-[1/1] rounded-full">
             <img src={Menu} alt="menu" onClick={()=>setMenu(!menu)}/>
             {menu ? 
-             <div className='backdrop-blur bg-white/30 flex flex-col gap-1'>
-                
+             <div className='backdrop-blur bg-white/30 flex flex-col gap-1'>    
              </div>:null
             }
          </div>

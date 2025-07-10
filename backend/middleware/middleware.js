@@ -16,21 +16,11 @@ const checkJwt = jwt({
   requestProperty: 'user'
 });
 
-console.log("checkJwt middleware initialized");
-
 
 module.exports = {
   checkJwt
 };
 
-// const isAuthenticated=async(req,res,next)=>{
-//   try{
-//     const token =req.cookies.auth0_token;
-//     const decode=jwt.decode() 
-//   }
-//   catch(error){
-//     console.log("error:",error);
-//   }
-// }
+
 
 
