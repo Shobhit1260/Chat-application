@@ -14,10 +14,10 @@ const userSchema=new mongoose.Schema({
         type:String
     },
     oauthProvider: {
-      type: String, // e.g., "auth0"
+      type: String,
     },
     oauthId: {
-      type: String, // e.g., "auth0|123456..."
+      type: String, 
       unique: true,
     },
 

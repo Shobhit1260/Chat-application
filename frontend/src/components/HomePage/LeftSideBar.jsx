@@ -1,17 +1,16 @@
-// @ts-nocheck
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import favicon from '../../chat-app-assests/favicon.svg'
 import Menu from '../../chat-app-assests/menu_icon.png';
 import search_icon from '../../chat-app-assests/search_icon.png';
-import {userDummyData} from '../../chat-app-assests/assets.js'
 import {setSelectedUser,clearSelectedUser} from '../../Redux/UserSlice.js'
 import { useSelector, useDispatch } from 'react-redux'
 
 
-function LeftSideBar() {
+function LeftSideBar({users}) {
   const [menu,setMenu]=useState(false);
   const dispatch= useDispatch();
   const selectedUser= useSelector((state)=>state?.userSelected.value)
+
   return (
     <div className={`flex flex-col gap-4 justify-start items-center  ${!selectedUser? 'w-1/2' : 'w-1/3'} h-[100%] px-4 py-4 backdrop-bg bg-white/20 rounded-l-xl `}>
        <div className='flex justify-between items-center p-2 w-full'>
@@ -36,15 +35,15 @@ function LeftSideBar() {
        </div>
        
             {
-  userDummyData.map((user, index) => (
-    <div onClick={()=>dispatch(setSelectedUser(user._id)) } key={index} className={`w-full px-4 flex gap-2 justify-start items-center relative rounded-xl cursor-pointer transition
+    users.map((user, index) => (
+    <div onClick={()=>dispatch(setSelectedUser(user)) } key={user._id} className={`w-full px-4 flex gap-2 justify-start items-center relative rounded-xl cursor-pointer transition
         ${selectedUser === user._id ? 'backdrop-blur bg-white/30' : ''}`}>
       <div className="w-8 aspect-[1/1] rounded-full overflow-hidden">
-        <img src={user.profilePic} alt="profile" className="w-full h-full object-cover" />
+        <img src={user.picture} alt="profile" className="w-full h-full object-cover" />
       </div>
 
       <div className="flex flex-col">
-        <div className="font-sm">{user.fullName}</div>
+        <div className="font-sm">{user.nickname}</div>
         <div className={index > 2 ? "text-gray-400" : "text-yellow-500"}>
           {index > 2 ? "Offline" : "Online"}
         </div>

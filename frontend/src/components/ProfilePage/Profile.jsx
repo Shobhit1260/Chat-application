@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 const Profile = () => {
   const { user, isAuthenticated, isLoading, logout ,getAccessTokenSilently} = useAuth0();
+  const [users,setUsers]=useState([]);
   const text="Loading your Profile ...";
    console.log("user:", user);
   useEffect(()=>{
@@ -20,7 +21,7 @@ const Profile = () => {
       credentials: "include"
      })
      const data= await res.json();
-     console.log("data:",data);
+     
      }
       if(isAuthenticated){
        sendtokentoBackend();
@@ -28,7 +29,6 @@ const Profile = () => {
   },[isAuthenticated,getAccessTokenSilently])
 
 
- 
   if (isLoading) {
     return (
       <div className="text-white text-2xl animate-pulse text-center mt-20">

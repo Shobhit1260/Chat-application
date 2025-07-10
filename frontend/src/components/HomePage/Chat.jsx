@@ -13,8 +13,7 @@ const socket = io("http://localhost:8000");
 
 function Chat() {
     const userSelected= useSelector((state)=>state?.userSelected.value);
-    const user= userDummyData.find((item) => item._id === userSelected)
-
+    console.log("userselected",userSelected);
     const [message,setmessage]=useState("");
     
     const handlechange=(e)=>{
@@ -35,10 +34,10 @@ function Chat() {
           </div>
           :
           <div className='flex flex-col justify-between  w-[600px] backdrop-blur bg-white/10 p-4'>
-            <div className='flex h-12 justify-between items-center gap-4 p-4'>
+            <div className='flex h-10 justify-between items-center gap-4 p-4'>
                 <div className='flex h-full justify-start items-center gap-2'>
-                <img className="w-12 aspect-[1/1] rounded-full" src={user.profilePic} alt="" />
-                <div className='text-xl'>{user?.fullName}</div>
+                <img className="w-8 aspect-[1/1] rounded-full object-center" src={userSelected.picture} alt="photo" />
+                <div className='text-xl'>{userSelected?.nickname}</div>
                 <div className="w-2 aspect-[1/1] rounded-full bg-green-500"></div>
                 </div>
                 <div><img src={help_icon} alt="" /></div>

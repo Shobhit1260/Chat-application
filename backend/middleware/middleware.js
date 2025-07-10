@@ -2,17 +2,20 @@ const { expressjwt: jwt } = require("express-jwt");
 const jwksRsa = require("jwks-rsa");
 
 console.log("Middleware file loaded");
+
 const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: `${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
+    jwksUri: "https://dev-ir2u634bo1ue8xg8.us.auth0.com/.well-known/jwks.json",
   }),
-  audience: process.env.AUTH0_AUDIENCE,
-  issuer: process.env.AUTH0_DOMAIN + "/",
-  algorithms: ["RS256"]
+  audience: "https://dev-ir2u634bo1ue8xg8.us.auth0.com/api/v2/",
+  issuer: `https://dev-ir2u634bo1ue8xg8.us.auth0.com/`,
+  algorithms: ["RS256"],
+  requestProperty: 'user'
 });
+
 console.log("checkJwt middleware initialized");
 
 
