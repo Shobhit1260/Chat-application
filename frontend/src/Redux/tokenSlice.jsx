@@ -3,15 +3,15 @@ const initialState={
     value:{}, 
 }
 
-const meSlice= createSlice({
-    name:'me',
+const tokenSlice= createSlice({
+    name:'token',
     initialState,
     reducers:{
-        setMe:(state,action)=>{
+        settoken:(state,action)=>{
             state.value = action.payload
         }  
      }
 })
 
-export const { setMe } = meSlice.actions;
-export default meSlice.reducer;
+export const { settoken } = tokenSlice.actions;
+export default tokenSlice.reducer;

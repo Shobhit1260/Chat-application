@@ -13,6 +13,10 @@ const userSchema=new mongoose.Schema({
     picture:{
         type:String
     },
+    chatHistory:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'message'
+    },
     oauthProvider: {
       type: String,
     },

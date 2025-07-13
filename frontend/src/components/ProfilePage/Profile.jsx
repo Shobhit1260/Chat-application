@@ -1,15 +1,22 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useSelector,useDispatch } from "react-redux";
+import { setMe } from "../../Redux/meSlice";
+import { settoken} from "../../Redux/tokenSlice";
+
 
 const Profile = () => {
   const { user, isAuthenticated, isLoading, logout ,getAccessTokenSilently} = useAuth0();
   const [users,setUsers]=useState([]);
-  const [me,setMe]=useState({})
+  const me=useSelector((state)=>(state?.me?.value))
+  const userSelected=useSelector((state)=>(state?.userSelected?.value))
+  const dispatch= useDispatch();
   const text="Loading your Profile ...";
   useEffect(()=>{
      const sendtokentoBackend=async()=>{
      const token= await getAccessTokenSilently();
+     dispatch(settoken(token));
      const res=await fetch('http://localhost:8000/v1/storeuser',{
       method:"POST",
       headers:{
@@ -20,12 +27,12 @@ const Profile = () => {
       credentials: "include"
      })
      const data= await res.json();
-     setMe(data.user);
+     dispatch(setMe(data.user));
      }
       if(isAuthenticated){
        sendtokentoBackend();
      }
-  },[isAuthenticated,getAccessTokenSilently])
+  },[isAuthenticated,getAccessTokenSilently,userSelected._id])
 
   console.log("me:",me);
   if (isLoading) {

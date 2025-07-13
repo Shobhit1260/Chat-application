@@ -1,5 +1,7 @@
 const User= require('../Models/userSchema');
 const Group=require('../Models/groupSchema');
+const Message=require('../Models/messageSchema');
+
 const groupSchema = require('../Models/groupSchema');
 
 exports.fetchUser=async(req,res)=>{
@@ -137,5 +139,27 @@ exports.storeUser=async(req,res)=>{
     })
   }
 
+}
+
+exports.fetchchatHistory=async(req,res)=>{
+  try{
+    const {id1,id2}=req.params;
+    const messages=await Message.find({
+      $or:[
+        { sender: id1, receiver: id2 },
+        { sender: id2, receiver: id1 }
+      ],
+      receiverModel: "User"
+    }).sort({date:1});
+    res.status(200).json({
+      success:true,
+      messages
+    });
+  }
+  catch(error){
+    res.status(500).json({
+      message:"Internal Server Error."
+    })
+  }
 }
 

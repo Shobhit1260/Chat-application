@@ -10,6 +10,8 @@ const User = require("./Models/userSchema");
 const Group= require('./Models/groupSchema');
 const routes=require('./Routes/route')
 const cookieParser=require('cookie-parser')
+const Message=require("./Models/messageSchema")
+
 
 dotenv.config();
 const port=process.env.PORT||4000;
@@ -35,7 +37,7 @@ const io = new Server(server,{
 
 
 io.on('connection',(socket)=>{
-  console.log("socket connected",socket.id);
+  
   socket.on('setup', async (userId) => {
      socket.userId = userId;
     //  for 1-1 chat
@@ -48,30 +50,26 @@ io.on('connection',(socket)=>{
     })
   })
 
-   socket.on("sendPrivateMessage",({toUserId,message})=>{
-      io.to(toUserId).emit("receivePrivateMessage",{
-        sender: socket.userId,
-        receiver: toUserId,
-        message,
-        type: 'private',
-        timestamp: Date.now(),
-      })
-   })
-  
-    socket.on("sendGroupMessage",({groupId,message})=>{
-      io.to(groupId).emit("receiveGroupMessage",{
-        sender: socket.userId,
-        receiver:groupId,
-        message,
-        type: 'group',
-        timestamp: Date.now(),
-      })
-   })
+   socket.on("sendPrivateMessage",async({toUserId,message,fromUserId})=>{
+    try{
+      
 
-   socket.on('disconnect', () => {
-    console.log(' Disconnected:', socket.id);
-  });
-
+       const savedMessage=await Message.create({
+        sender:fromUserId,
+        receiver:toUserId,
+        receiverModel:"User",
+        message,
+        date:Date.now(),
+       })
+       io.to(toUserId).emit("receivedPrivateMessage",savedMessage);
+      }
+      catch(error){
+       console.log("error",error);
+       socket.on('disconnect', () => {
+      console.log(' Disconnected:', socket.id);
+      })
+   }
+  })
 })
 
 mongoose.connect(process.env.MONGO_URI)

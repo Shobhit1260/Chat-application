@@ -15,10 +15,16 @@ createRoot(document.getElementById('root')).render(
        clientId="1xmPEP1CORs03Qb23WzWWVvKHl3gDXlp"
        authorizationParams={{ redirect_uri: window.location.origin ,
        audience:"https://dev-ir2u634bo1ue8xg8.us.auth0.com/api/v2/",
-       scope: "openid profile email offline_access"
+       scope: `
+        openid
+        profile
+        email 
+        offline_access
+      `
+       .trim().replace(/\s+/g, ' ')
        }}
        useRefreshTokens={true}
-       cacheLocation="localstorage"
+        cacheLocation="localstorage"
     >
       <Provider store={store}>
         <App />
