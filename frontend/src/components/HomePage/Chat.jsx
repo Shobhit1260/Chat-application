@@ -58,7 +58,7 @@ function Chat() {
         const data = await res.json();
         setChatHistory(data.messages || []);
       } catch (error) {
-        console.error('Failed to fetch chat history:', error);
+        console.error('Failed to fetch chat history:',error);
       }
     };
 
@@ -111,13 +111,13 @@ function Chat() {
 
   return (
     <>
-      {!userSelected ? (
-        <div className="w-1/2 backdrop-blur-lg bg-white/10 flex flex-col gap-4 justify-center items-center rounded-r-xl">
+      {Object.keys(userSelected).length === 0? (
+        <div className="w-1/2 h-[100%] backdrop-blur-lg bg-white/10 flex flex-col gap-4 justify-center items-center rounded-r-xl">
           <img src={logo_icon} alt="logo" className="w-32 aspect-[1/1]" />
           <div className="text-2xl">Chat anytime, anywhere</div>
         </div>
       ) : (
-        <div className="flex flex-col justify-between w-[600px] backdrop-blur bg-white/10 p-4">
+        <div className="flex flex-col justify-between w-[600px] h-[100%] backdrop-blur bg-white/10 p-4">
           <div className="flex h-10 justify-between items-center gap-4 p-4">
             <div className="flex h-full justify-start items-center gap-2">
               <img
@@ -128,12 +128,12 @@ function Chat() {
               <div className="text-xl">{userSelected.nickname}</div>
               <div className="w-2 aspect-[1/1] rounded-full bg-green-500"></div>
             </div>
-            <div>
-              <img src={help_icon} alt="help" />
+            <div >
+              <img className="font-sm" src={help_icon} alt="help" />
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 overflow-y-scroll h-[400px] px-2 py-4">
+          <div className="flex flex-col gap-2 overflow-y-scroll h-[500px] px-2 py-4">
             {chatHistory.map((msg, index) => (
               <div
                 key={msg._id || index}

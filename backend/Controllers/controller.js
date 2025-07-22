@@ -162,4 +162,19 @@ exports.fetchchatHistory=async(req,res)=>{
     })
   }
 }
+exports.getallUsers=async(req,res)=>{
+  try{
+    const users=await User.find({});
+    res.status(200).json({
+      success:true,
+      users
+    });
+  }
+  catch(error){
+    console.log("Error fetching all users:", error.message);
+    res.status(500).json({
+      message: "Internal Server Error."
+    });
+  }
+}
 

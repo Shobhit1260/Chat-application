@@ -25,7 +25,7 @@ function Home() {
    },[])
  
   return (
-     <div className='w-11/12 h-[700px] text-white rounded-lg flex ' >
+     <div className='w-11/12 h-[700px] text-white rounded-lg flex justify-center items-center ' >
            <LeftSideBar users={users}/> 
            <Chat/>
            <RightSideBar/>

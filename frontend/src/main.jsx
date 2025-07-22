@@ -20,7 +20,8 @@ createRoot(document.getElementById('root')).render(
         profile
         email 
         offline_access
-      `
+        https://www.googleapis.com/auth/drive.readonly 
+        https://www.googleapis.com/auth/photoslibrary.readonly`
        .trim().replace(/\s+/g, ' ')
        }}
        useRefreshTokens={true}
