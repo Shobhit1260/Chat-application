@@ -38,7 +38,7 @@ exports.createGroup = async (req, res) => {
         message: "Please add at least two members to the group.",
       });
     }
-    console.log("req.user.sub:",req.user.sub);
+
 
     const currentUser = await User.findOne({ oauthId: req.user.sub });
     if (!currentUser) {

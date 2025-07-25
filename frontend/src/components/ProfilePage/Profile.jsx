@@ -10,7 +10,7 @@ const Profile = () => {
   const me = useSelector((state) => state?.me?.value);
   const userSelected = useSelector((state) => state?.userSelected?.value);
   const dispatch = useDispatch();
-  console.log("userSelected:",userSelected);
+  
   useEffect(() => {
     const sendtokentoBackend = async () => {
       const token = await getAccessTokenSilently();
@@ -50,7 +50,7 @@ const Profile = () => {
         rounded-2xl py-6 px-3 sm:p-8 mx-auto mt-10 
         shadow-xl flex flex-col justify-start items-center gap-4 sm:gap-6 animate-fade-in
       ">
-        {/* Avatar */}
+       
         <div className="relative group mb-2">
           <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-green-400 to-blue-500 blur opacity-70 group-hover:opacity-100 transition duration-300"></div>
           <img
@@ -60,12 +60,12 @@ const Profile = () => {
           />
         </div>
 
-        {/* Welcome */}
+        
         <h2 className="text-2xl sm:text-3xl md:text-4xl text-cyan-200 font-bold tracking-wide text-center px-2 break-all">
           Welcome, {user.name}
         </h2>
 
-        {/* Chat Button */}
+       
         <Link
           to="/chat"
           className="w-full sm:w-auto mt-4 px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-green-400 to-blue-500 text-white font-medium rounded-xl shadow hover:scale-105 transform transition duration-300 text-center"
@@ -73,7 +73,7 @@ const Profile = () => {
           🚀 Enter Chat Room
         </Link>
 
-        {/* Logout Button */}
+       
         <button
           onClick={() => logout()}
           className="w-full sm:w-auto mt-4 px-4 py-2 sm:px-5 sm:py-2 bg-red-600 hover:bg-red-400 text-white rounded-lg shadow transition duration-300 text-center"

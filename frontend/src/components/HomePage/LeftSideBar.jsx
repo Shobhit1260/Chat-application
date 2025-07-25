@@ -5,14 +5,19 @@ import search_icon from '../../chat-app-assests/search_icon.png';
 import {setSelectedUser,clearSelectedUser} from '../../Redux/UserSlice.js'
 import { useSelector, useDispatch } from 'react-redux'
 import { useAuth0 } from '@auth0/auth0-react';
+import { io } from 'socket.io-client';
 
-function LeftSideBar({users}) {
+
+
+function LeftSideBar({users,socket,onlineUserIds}) {
   const [menu,setMenu]=useState(false);
   const [groupMembers,setGroupMembers]=useState([]);
   const dispatch= useDispatch();
-  const selectedUser= useSelector((state)=>state?.userSelected.value)
+  const selectedUser= useSelector((state)=>state?.userSelected?.value)
   const {logout} = useAuth0(); 
   const [showUsers, setShowUsers] = useState(false);
+
+
 
   return (
     <div className={`flex flex-col gap-4 justify-start items-center  w-[500px] h-[100%] px-4 py-4 backdrop-bg bg-white/20 rounded-l-xl `}>
@@ -31,21 +36,21 @@ function LeftSideBar({users}) {
             }
             {showUsers?
             <div className='fixed inset-0 p-4 bg-white/20 bg-opacity-10 flex flex-col justify-center items-center overflow-y-scroll'>
-           {
-          users.map((user)=>{
+           <div className="z-40 w-1/2 h-min p-4 bg-white flex flex-col gap-8 justify-center items-center relative rounded-xl">
+           {users.map((user)=>{
             return (
                console.log("user:",users.length),
-                users.map((user) => (
-                    <div key={user._id} className={`w-1/2 h-[700px] px-4 flex gap-2 justify-start items-center relative rounded-xl cursor-pointer transition
-                        `}>
+                    <div key={user._id} className={`flex justify-start items-center 
+                       `}>
                       <div className="w-8 aspect-[1/1] rounded-full overflow-hidden">
                         <img src={user.picture} alt="profile" className="w-full h-full object-cover" />
                       </div>
-                        <div className="font-sm">{user.nickname}</div>
+                      <div className="font-sm text-black">{user.nickname}</div>
                         
                     </div>   
-                 )))
-          })} 
+            )
+          })
+          }</div> 
        </div>:null     
           }
          </div>
@@ -67,12 +72,17 @@ function LeftSideBar({users}) {
 
       <div className="flex flex-col">
         <div className="font-sm">{user.nickname}</div>
-        <div className={index > 2 ? "text-gray-400" : "text-yellow-500"}>
-          {index > 2 ? "Offline" : "Online"}
-        </div>
+        {onlineUserIds.includes(user._id) ?
+          <div className= "text-green-400">
+            Online
+           </div>  :
+          <div className= "text-red-700">
+            Offline
+          </div>
+           
+          
+        }
       </div>
-
-      {index > 3 && <div className="absolute right-2 backdrop-blur bg-white/50 w-4 aspect-[1/1] rounded-full flex justify-center items-center text-sm text-gray-500">{index}</div>}
     </div>
   ))
   
@@ -80,6 +90,7 @@ function LeftSideBar({users}) {
 
   </div>     
     </div>
+    
   )
 }
 

@@ -35,11 +35,18 @@ const io = new Server(server,{
   }
 });
 
+const onlineUsers = new Map();
 
 io.on('connection',(socket)=>{
-  
-  socket.on('setup', async (userId) => {
-     socket.userId = userId;
+  console.log('New client connected:', socket.id);
+  const userId = socket.handshake.query.userId;
+  console.log("userId:",userId);
+   if (userId) {
+    onlineUsers.set(userId, socket.id);
+    io.emit('online-users', Array.from(onlineUsers.keys()));
+  }
+
+  socket.on('setup', async (userId) => { 
     //  for 1-1 chat
      socket.join(userId);
     // for group-chat 
@@ -52,8 +59,6 @@ io.on('connection',(socket)=>{
 
    socket.on("sendPrivateMessage",async({toUserId,message,fromUserId})=>{
     try{
-      
-
        const savedMessage=await Message.create({
         sender:fromUserId,
         receiver:toUserId,
@@ -70,6 +75,16 @@ io.on('connection',(socket)=>{
       })
    }
   })
+  socket.on('disconnect', () => {
+    onlineUsers.forEach((value, key) => {
+      if (value === socket.id) {
+        onlineUsers.delete(key);
+      }
+    });
+    io.emit('online-users', Array.from(onlineUsers.keys())); 
+  });
+
+  
 })
 
 mongoose.connect(process.env.MONGO_URI)

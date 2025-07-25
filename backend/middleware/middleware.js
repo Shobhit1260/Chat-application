@@ -1,7 +1,6 @@
 const { expressjwt: jwt } = require("express-jwt");
 const jwksRsa = require("jwks-rsa");
 
-console.log("Middleware file loaded");
 
 const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({

@@ -6,12 +6,10 @@ import gallery_icon from '../../chat-app-assests/gallery_icon.svg';
 
 import { useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
-import { useAuth0 } from '@auth0/auth0-react';
 
-const socket = io('http://localhost:8000');
 
-function Chat() {
-  const {getAccessTokenSilently}=useAuth0();
+
+function Chat({socket,onlineUserIds}) {
   const userSelected = useSelector((state) => state?.userSelected?.value);
   const me = useSelector((state) => state?.me?.value);
   const token = useSelector((state)=> state?.token?.value);
@@ -20,7 +18,7 @@ function Chat() {
   const [chatHistory, setChatHistory] = useState([]);
 
   useEffect(() => {
-    if (!me || !userSelected) return;
+    if (!me || !userSelected || !socket) return;
 
     socket.emit('setup', me._id);
 
@@ -41,10 +39,6 @@ function Chat() {
     const fetchHistory = async () => {
       try {
        
-        console.log("userSelected",userSelected._id);
-        console.log("me",me._id);
-        console.log("token:",token);
-
         const res = await fetch(
           `http://localhost:8000/v1/fetchchathistory/${me._id}/${userSelected._id}`,
           {
@@ -92,23 +86,8 @@ function Chat() {
   const handleChange = (e) => {
     setMessage(e.target.value);
   };
-
-  async function fetchGooglePhotos() {
-  const token = await getAccessTokenSilently({
-    authorizationParams: {
-      audience: "https://dev-ir2u634bo1ue8xg8.us.auth0.com/api/v2/",
-      scope: "https://www.googleapis.com/auth/photoslibrary.readonly"
-    }
-  });
-  const response = await fetch("https://photoslibrary.googleapis.com/v1/mediaItems", {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-  const data = await response.json();
-  console.log("photoData:",data);
-}
-
+  console.log("socket:",socket);
+  console.log("onlineUserIds:", onlineUserIds);
   return (
     <>
       {Object.keys(userSelected).length === 0? (
@@ -117,16 +96,20 @@ function Chat() {
           <div className="text-2xl">Chat anytime, anywhere</div>
         </div>
       ) : (
-        <div className="flex flex-col justify-between w-[600px] h-[100%] backdrop-blur bg-white/10 p-4">
-          <div className="flex h-10 justify-between items-center gap-4 p-4">
+        <div className="z-0 flex flex-col justify-between w-[600px] h-[100%] backdrop-blur bg-white/10 rounded-r-lg ">
+          <div className="flex h-16 justify-between items-center gap-4 p-4 backdrop-blur bg-white/30  rounded-r-lg">
             <div className="flex h-full justify-start items-center gap-2">
               <img
-                className="w-8 aspect-[1/1] rounded-full object-center"
+                className={`w-8 aspect-[1/1] rounded-full object-center  ${onlineUserIds.includes(userSelected._id) ? 'text-green-700 ' : ''}`}
                 src={userSelected.picture}
                 alt="photo"
               />
               <div className="text-xl">{userSelected.nickname}</div>
-              <div className="w-2 aspect-[1/1] rounded-full bg-green-500"></div>
+              {onlineUserIds.includes(userSelected._id) ? 
+              <div className="text-green-500 font-semibold" >Online</div> :
+              <div className="text-red-500 font-semibold">Offline</div>
+              }
+
             </div>
             <div >
               <img className="font-sm" src={help_icon} alt="help" />
@@ -148,7 +131,7 @@ function Chat() {
             ))}
           </div>
 
-          <form className="flex gap-4" onSubmit={sendmsg}>
+          <form className="flex gap-4 p-4" onSubmit={sendmsg}>
             <div className="flex rounded-2xl w-11/12 justify-between items-center bg-white/10 py-2 px-4">
               <input
                 type="text"
@@ -160,7 +143,7 @@ function Chat() {
               />
               <img src={gallery_icon} alt="gallery" />
             </div>
-            <button onClick={fetchGooglePhotos} type="submit">
+            <button type="submit">
               <img src={send_button} alt="send" />
             </button>
           </form>
