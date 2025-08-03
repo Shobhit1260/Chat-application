@@ -1,19 +1,40 @@
-import React from 'react'
+import React from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
-import { useSelector,useDispatch } from 'react-redux';
-
+import { useSelector } from 'react-redux';
 
 function RightSideBar() {
   const { logout } = useAuth0();
-  const userSelected=useSelector((state)=>state?.userSelected?.value);
+  const userSelected = useSelector((state) => state?.userSelected?.value);
 
+  if (!userSelected) return null; 
+
+  
+  if (userSelected?.members?.length > 0) {
+    console.log("members:", userSelected.members);
+  } else {
+    console.log("userSelected:", userSelected);
+  }
+
+ 
   return (
-    <div>{
-      Object.keys(userSelected).length===0? null: <button className="w-[400px] bg-white/20 rounded-r-lg h-[700px]" onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>log out</button>
-
+    <div className="p-4">
+      
+      {
+        userSelected?.members?.length > 0 ? (
+          <div>
+            <p className="font-medium">Group Members:</p>
+            <ul className="list-disc pl-4">
+              {userSelected.members.map((member, idx) => (
+                <li key={idx}>{member.nickname}</li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          null
+        )
       }
     </div>
-  )
+  );
 }
 
-export default RightSideBar
+export default RightSideBar;
