@@ -10,7 +10,8 @@ const User = require("./Models/userSchema");
 const Group= require('./Models/groupSchema');
 const routes=require('./Routes/route')
 const cookieParser=require('cookie-parser')
-const Message=require("./Models/messageSchema")
+const Message=require("./Models/messageSchema");
+const { Socket } = require("net");
 
 
 dotenv.config();
@@ -38,24 +39,28 @@ const io = new Server(server,{
 const onlineUsers = new Map();
 
 io.on('connection',(socket)=>{
-  console.log('New client connected:', socket.id);
-  const userId = socket.handshake.query.userId;
-  console.log("userId:",userId);
+   const userId = socket.handshake.query.userId;
+   
    if (userId) {
-    onlineUsers.set(userId, socket.id);
+    if(!onlineUsers.has(userId)){
+      onlineUsers.set(userId,[]);
+    }
+    onlineUsers.get(userId).push(socket.id);
+    
     io.emit('online-users', Array.from(onlineUsers.keys()));
   }
 
   socket.on('setup', async (userId) => { 
     //  for 1-1 chat
-     socket.join(userId);
+    socket.join(userId);
     // for group-chat 
     const user = await User.findById(userId).populate('groups');
     user?.groups.forEach(group => {
         socket.join(group._id.toString())
         console.log(group._id);
     })
-  })
+    });
+
 
    socket.on("sendPrivateMessage",async({toUserId,message,fromUserId})=>{
     try{
@@ -64,9 +69,15 @@ io.on('connection',(socket)=>{
         receiver:toUserId,
         receiverModel:"User",
         message,
-        date:Date.now(),
+        isRead:false,
+        
        })
-       io.to(toUserId).emit("receivedPrivateMessage",savedMessage);
+      const sockets=onlineUsers.get(toUserId);
+      sockets.forEach((socket)=>{
+        io.to(socket).emit("receivedPrivateMessage",savedMessage);
+      }) 
+      
+
       }
       catch(error){
        console.log("error",error);
@@ -74,18 +85,35 @@ io.on('connection',(socket)=>{
       console.log(' Disconnected:', socket.id);
       })
    }
+
+   socket.on("sendGroupMessage",async({toGroupId,message,fromUserId})=>{
+    try{
+       const savedMessage=await Message.create({
+        sender:fromUserId,
+        receiver:toGroupId,
+        receiverModel:"Group",
+        message,
+        isRead:false
+       })
+       io.to(toGroupId).emit("receivedGroupMessage",savedMessage);
+      }
+      catch(error){
+       console.log("error",error);
+      }
   })
   socket.on('disconnect', () => {
-    onlineUsers.forEach((value, key) => {
-      if (value === socket.id) {
-        onlineUsers.delete(key);
-      }
+    const sockets=onlineUsers.get(userId);
+    sockets.filter((id) => id !== socket.id) ;
+      if(sockets.length===0)
+       onlineUsers.delete(userId);
+      else
+       onlineUsers.set(userId,sockets);
+      
     });
     io.emit('online-users', Array.from(onlineUsers.keys())); 
   });
+   })  
 
-  
-})
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => {

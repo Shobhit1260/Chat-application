@@ -19,12 +19,13 @@ const messageSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
-  date: {
-    type: Date,
-    default: Date.now,
+  isRead:{
+    type:Boolean,
+    default:false,
   }
 }, {
   timestamps: true 
 });
 
 module.exports = mongoose.model('Message', messageSchema);
+

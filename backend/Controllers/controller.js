@@ -23,9 +23,9 @@ exports.fetchUser=async(req,res)=>{
 
 exports.createGroup = async (req, res) => {
   try {
-    const { name, membersId } = req.body;
+    const { nickname, membersId } = req.body;
 
-    if (!name) {
+    if (!nickname) {
       return res.status(400).json({
         success: false,
         message: "Please provide a group name.",
@@ -38,9 +38,10 @@ exports.createGroup = async (req, res) => {
         message: "Please add at least two members to the group.",
       });
     }
-
+  
 
     const currentUser = await User.findOne({ oauthId: req.user.sub });
+    console.log("currentUser:", currentUser);
     if (!currentUser) {
       return res.status(404).json({
         success: false,
@@ -49,8 +50,8 @@ exports.createGroup = async (req, res) => {
     }
 
     const group = await Group.create({
-      name,
-      members: [...membersId, currentUser._id], 
+      nickname,
+      members: [...membersId, currentUser], 
       createdBy: currentUser._id,
     });
 
@@ -116,7 +117,7 @@ exports.addMember=async(req,res)=>{
 exports.storeUser=async(req,res)=>{
   try{
     const {nickname,email,picture,sub}=req.body;
-      let user = await User.findOne({ oauthId: sub });
+    let user = await User.findOne({ oauthId: sub });
 
   if (!user) {
     user = await User.create({
@@ -177,4 +178,22 @@ exports.getallUsers=async(req,res)=>{
     });
   }
 }
+
+exports.getallGroups=async(req,res)=>{
+  try{
+    const groups=await Group.find({});
+    res.status(200).json({
+      success:true,
+      groups
+    })
+  }
+  catch(error){
+   console.log("Error fetching all groups:", error.message);
+    res.status(500).json({
+      message: "Internal Server Error."
+    });
+  }
+}
+
+
 

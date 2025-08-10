@@ -1,16 +1,18 @@
 const mongoose=require('mongoose');
 const groupSchema=new mongoose.Schema({
-    name:{
+    nickname:{
         type:String,
         required:true,
     },
-    profile:{
+    picture:{
         type: String,
        required: false,
+       default:""
     },
     description:{
         type:String,
         required:false,
+        default:""
     },
     createdBy:{
         type:mongoose.Schema.Types.ObjectId,
