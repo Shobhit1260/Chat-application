@@ -39,14 +39,14 @@ const io = new Server(server,{
 const onlineUsers = new Map();
 
 io.on('connection',(socket)=>{
-   const userId = socket.handshake.query.userId;
-   
+   const userId = socket.handshake.auth.userId;
+   console.log(userId, "connected");
    if (userId) {
     if(!onlineUsers.has(userId)){
       onlineUsers.set(userId,[]);
     }
     onlineUsers.get(userId).push(socket.id);
-    
+  
     io.emit('online-users', Array.from(onlineUsers.keys()));
   }
 

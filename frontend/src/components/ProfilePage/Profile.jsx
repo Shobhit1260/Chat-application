@@ -3,18 +3,18 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setMe } from "../../Redux/meSlice";
-import { settoken } from "../../Redux/tokenSlice";
 
-const Profile = () => {
+function Profile(){
   const { user, isAuthenticated, isLoading, logout, getAccessTokenSilently } = useAuth0();
   const me = useSelector((state) => state?.me?.value);
   const userSelected = useSelector((state) => state?.userSelected?.value);
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
-    const sendtokentoBackend = async () => {
+      const sendtokentoBackend = async () => {
       const token = await getAccessTokenSilently();
-      dispatch(settoken(token));
+  
+      localStorage.setItem("token", token);
       const res = await fetch('http://localhost:8000/v1/storeuser', {
         method: "POST",
         headers: {
@@ -30,8 +30,10 @@ const Profile = () => {
     if (isAuthenticated) {
       sendtokentoBackend();
     }
-    // eslint-disable-next-line
-  }, [isAuthenticated, getAccessTokenSilently, userSelected?._id]);
+    
+  }, [isAuthenticated]);
+
+
 
   if (isLoading) {
     return (
@@ -42,6 +44,7 @@ const Profile = () => {
   }
 
   return (
+
     isAuthenticated && (
       <div className="
         w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 
@@ -54,15 +57,15 @@ const Profile = () => {
         <div className="relative group mb-2">
           <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-green-400 to-blue-500 blur opacity-70 group-hover:opacity-100 transition duration-300"></div>
           <img
-            src={user.picture}
+            src={user?.picture}
             className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-white shadow-lg transition-transform duration-300 group-hover:scale-105"
-            alt={user.name}
+            alt={user?.name}
           />
         </div>
 
         
         <h2 className="text-2xl sm:text-3xl md:text-4xl text-cyan-200 font-bold tracking-wide text-center px-2 break-all">
-          Welcome, {user.name}
+          Welcome, {user?.name}
         </h2>
 
        

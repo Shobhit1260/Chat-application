@@ -151,7 +151,7 @@ exports.fetchchatHistory=async(req,res)=>{
         { sender: id2, receiver: id1 }
       ],
       receiverModel: "User"
-    }).sort({date:1});
+    }).sort({ createdAt: 1 });
     res.status(200).json({
       success:true,
       messages

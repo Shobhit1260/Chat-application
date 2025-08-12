@@ -3,7 +3,9 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { BrowserRouter, useNavigate } from 'react-router-dom'
-import { store } from './Redux/store'
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './Redux/store';
+
 import { Provider } from 'react-redux'
 import { Auth0Provider } from '@auth0/auth0-react';
 
@@ -28,8 +30,10 @@ createRoot(document.getElementById('root')).render(
         cacheLocation="localstorage"
     >
       <Provider store={store}>
-        <App />
-      </Provider> 
+        <PersistGate loading={null} persistor={persistor}>
+          <App />
+        </PersistGate>
+      </Provider>
      </Auth0Provider>
     </BrowserRouter>
 )

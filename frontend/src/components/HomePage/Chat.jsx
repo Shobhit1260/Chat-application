@@ -1,37 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+// @ts-ignore
 import logo_icon from '../../chat-app-assests/logo_icon.svg';
-import help_icon from '../../chat-app-assests/help_icon.png';
+// @ts-ignore
 import send_button from '../../chat-app-assests/send_button.svg';
+// @ts-ignore
 import gallery_icon from '../../chat-app-assests/gallery_icon.svg';
 
 import { useSelector } from 'react-redux';
+import { io } from 'socket.io-client';
+
+import socket from './socket.js'
 
 
-function Chat({socket,onlineUserIds}) {
+function Chat() {
 
   const userSelected = useSelector((state) => state?.userSelected?.value);
   const me = useSelector((state) => state?.me?.value);
-  const token = useSelector((state)=> state?.token?.value);
-
+  const token = localStorage.getItem("token");
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
-
+  const [onlineUsers, setOnlineUsers] = useState([]);
+   
   useEffect(() => {
-    if (!me || !userSelected || !socket) return;
+    
+    if (!me) return;
 
-    socket.emit('setup', me._id);
-
+    console.log("me", me);
+    socket.auth={userId:me?._id};
+    socket.connect(); 
+    socket.emit('setup', me?._id);
+    
     const handleReceive = (data) => {
       setChatHistory((prev) => [...prev, data]);
     };
-
+   
     socket.on('receivedPrivateMessage', handleReceive);
     socket.on('receivedGroupMessage', handleReceive);
+
+    socket.on("online-users",(onlineUsers)=>{
+      setOnlineUsers(onlineUsers);
+    })
+    
     return () => {
-      socket.off('receivedPrivateMessage', handleReceive);
-      socket.off('receivedGroupMessage', handleReceive);
+    socket.off('receivedPrivateMessage', handleReceive);
+    socket.off('receivedGroupMessage', handleReceive);
+    socket.off("online-users");     
     };
-  }, [me?._id,userSelected?._id]);
+  }, [me?._id]);
 
 
   useEffect(() => {
@@ -39,7 +54,6 @@ function Chat({socket,onlineUserIds}) {
 
     const fetchHistory = async () => {
       try {
-       
         const res = await fetch(
           `http://localhost:8000/v1/fetchchathistory/${me._id}/${userSelected._id}`,
           {
@@ -58,7 +72,7 @@ function Chat({socket,onlineUserIds}) {
     };
 
     fetchHistory();
-  }, [userSelected?._id]);
+  }, [me?._id,userSelected?._id]);
 
   const sendmsg = (e) => {
     e.preventDefault();
@@ -69,7 +83,7 @@ function Chat({socket,onlineUserIds}) {
       receiver: userSelected._id,
       receiverModel: isGroup? 'Group':'User',
       message,
-      date: Date.now(),
+      isRead:false,
     };
 
     // Emit message
@@ -116,7 +130,8 @@ const getColorFromName = (name) => {
   return colors[index];
 };
 
-
+ console.log("socket connected", socket.id);
+ console.log("online",onlineUsers);
   return (
     <>
       {Object.keys(userSelected).length === 0? (
@@ -131,16 +146,16 @@ const getColorFromName = (name) => {
           <div className="flex h-16 justify-between items-center gap-4 p-4 backdrop-blur bg-white/30  rounded-r-lg">
             <div className="flex h-full justify-start items-center gap-2">
               <img
-                className={`w-8 aspect-[1/1] rounded-full object-center  ${onlineUserIds.includes(userSelected._id) ? 'text-green-700 ' : ''}`}
+                className={`w-8 aspect-[1/1] rounded-full object-center`  }
                 src={userSelected.picture}
                 alt="photo"
               />
               <div className="text-lg min-w-max">{userSelected.nickname}
-              {!isGroup && 
-              (onlineUserIds.includes(userSelected._id) ? 
-              <div className="text-green-500 font-semibold text-lg">Online</div> :
-              <div className="text-gray-500 font-semibold text-lg">Offline</div>
-              )}
+              {
+              onlineUsers.includes(userSelected?._id) ?
+                <div className="text-green-400">Online</div>:
+                null
+              }
                </div>
             </div>
             
@@ -179,7 +194,7 @@ const getColorFromName = (name) => {
           </form>
         </div>
         ):(    
-        <div>
+        <div className='w-[600px] h-[100%]'>
           <div className="flex h-16 justify-between items-center gap-4 p-4 backdrop-blur bg-white/30 rounded-r-lg">
             <div className="flex h-full justify-start items-center gap-2">
               <div

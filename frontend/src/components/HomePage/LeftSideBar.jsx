@@ -11,21 +11,20 @@ import { setUsersandGroup } from '../../Redux/usersandGroup.jsx';
 
 
 
-function LeftSideBar({leftSideBarData,users,socket,onlineUserIds}) {
+function LeftSideBar({leftSideBarData}) {
    const dispatch= useDispatch();
    const {logout} = useAuth0(); 
 
   const selectedUser= useSelector((state)=>state?.userSelected?.value)
-  const token = useSelector((state)=> state?.token?.value); 
   const me = useSelector((state) => state?.me?.value);
-
+  const token=localStorage.getItem("token");
   const [menu,setMenu]=useState(false);
   const [showUsers, setShowUsers] = useState(false);
   const [members, setMember] = useState(false);
 
   const [groupName,setgroupName]=useState("");
   const [memberSelected,setMemberSelected]=useState([]);
-   
+  
 
   const changeHandler=(e)=>{
     const userId = e.target.id;
@@ -93,7 +92,12 @@ function LeftSideBar({leftSideBarData,users,socket,onlineUserIds}) {
             <img src={Menu} alt="menu" onClick={()=>setMenu(!menu)}/>
             {menu ? 
              <div className='z-40 absolute top-0 right-5 p-4 rounded-lg backdrop-blur bg-white flex flex-col gap-1 w-max h-min'>  
-              <h1 className='font-serif text-sm text-gray-600 cursor-default' onClick={()=>logout()}>logout</h1> 
+              <h1 className='font-serif text-sm text-gray-600 cursor-default' 
+              onClick={
+                ()=>{
+                logout()
+              }
+              }>logout</h1> 
               <h2 className='font-serif text-sm text-gray-600 cursor-default' onClick={()=>setShowUsers(!showUsers)}>Create group</h2>
              </div>:null
             }
@@ -180,14 +184,6 @@ function LeftSideBar({leftSideBarData,users,socket,onlineUserIds}) {
 
       <div className="flex flex-col">
         <div className="font-sm">{user.nickname}</div>
-        {onlineUserIds.includes(user._id) ?
-          <div className= "text-green-400">
-            Online
-           </div>  :
-          null
-           
-          
-        }
       </div>
     </div>
   ))
