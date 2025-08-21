@@ -1,5 +1,5 @@
 const express= require("express");
-const { createGroup, addMember, storeUser, fetchUser,fetchchatHistory, getallUsers, getallGroups } = require("../Controllers/controller");
+const { createGroup, addMember, storeUser, fetchUser,fetchchatHistory, getallUsers, getallGroups, fetchGroupChatHistory } = require("../Controllers/controller");
 const { checkJwt } = require("../middleware/middleware");
 
 const router=express.Router();
@@ -11,6 +11,7 @@ router.get('/fetchusers',checkJwt,fetchUser)
 router.get('/fetchgroups',checkJwt,getallGroups)
 
 router.get('/fetchchathistory/:id1/:id2',checkJwt,fetchchatHistory);
+router.get('/fetchgrouphistory/:groupId',checkJwt,fetchGroupChatHistory);
 
 
 

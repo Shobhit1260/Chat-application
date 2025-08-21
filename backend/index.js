@@ -41,7 +41,11 @@ const onlineUsers = new Map();
 io.on('connection',(socket)=>{
    const userId = socket.handshake.auth.userId;
    console.log(userId, "connected");
-   if (userId) {
+   if(!userId){
+    socket.disconnect();
+    return;
+   }
+   if(userId) {
     if(!onlineUsers.has(userId)){
       onlineUsers.set(userId,[]);
     }
@@ -81,11 +85,9 @@ io.on('connection',(socket)=>{
       }
       catch(error){
        console.log("error",error);
-       socket.on('disconnect', () => {
-      console.log(' Disconnected:', socket.id);
-      })
-   }
-
+      
+      }
+    })
    socket.on("sendGroupMessage",async({toGroupId,message,fromUserId})=>{
     try{
        const savedMessage=await Message.create({
@@ -103,13 +105,11 @@ io.on('connection',(socket)=>{
   })
   socket.on('disconnect', () => {
     const sockets=onlineUsers.get(userId);
-    sockets.filter((id) => id !== socket.id) ;
-      if(sockets.length===0)
+    const updatedSockets=sockets.filter((id) => id !== socket.id) ;
+      if(updatedSockets.length===0)
        onlineUsers.delete(userId);
       else
-       onlineUsers.set(userId,sockets);
-      
-    });
+       onlineUsers.set(userId,updatedSockets);
     io.emit('online-users', Array.from(onlineUsers.keys())); 
   });
    })  

@@ -1,12 +1,9 @@
-const User= require('../Models/userSchema');
+const User=require('../Models/userSchema.js');
 const Group=require('../Models/groupSchema');
 const Message=require('../Models/messageSchema');
 
-const groupSchema = require('../Models/groupSchema');
-
 exports.fetchUser=async(req,res)=>{
-   try{
-       
+   try{  
       const users= await User.find({});
       return res.status(200).json({
         success:true,
@@ -151,7 +148,8 @@ exports.fetchchatHistory=async(req,res)=>{
         { sender: id2, receiver: id1 }
       ],
       receiverModel: "User"
-    }).sort({ createdAt: 1 });
+    })
+    .populate("sender").sort({ createdAt: 1 });
     res.status(200).json({
       success:true,
       messages
@@ -160,6 +158,29 @@ exports.fetchchatHistory=async(req,res)=>{
   catch(error){
     res.status(500).json({
       message:"Internal Server Error."
+    })
+  }
+}
+
+exports.fetchGroupChatHistory=async(req,res)=>{
+  try{
+    const{groupId}=req.params;
+    const messages=await Message.find({
+      receiver: groupId,
+      receiverModel: "Group"
+    }).
+    populate('sender').
+    sort({createdAt:1});
+    res.status(200).json({
+      success:true,
+      messages
+    })
+  }
+  catch(error){
+    console.log("Error fetching group chat history:", error);
+    res.status(500).json({
+      success:false,
+      message:"Internal Server Error"
     })
   }
 }
