@@ -199,9 +199,8 @@ function LeftSideBar({leftSideBarData}) {
         style={{ backgroundColor: getColorFromName(group.nickname|| 'alpha') }}>
         {group.nickname?.charAt(0).toUpperCase()}
       </div>
-
       <div className="flex flex-col">
-        <div className="font-sm">{group.nickname}</div>
+      <div className="font-sm">{group.nickname}</div>
        
       </div>
     </div>)
